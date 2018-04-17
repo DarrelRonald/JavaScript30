@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HTML5 Canvas</title>
+</head>
+
+
+<body>
+<canvas id="draw" width="800" height="800"></canvas>
+
+<script>
+// CANVAS & CONTEXT
+const canvas = document.querySelector('#draw'); //canvas
+const ctx = canvas.getContext('2d');    //canvas context 2D or 3D
+canvas.width = window.innerWidth;       //get max window W
+canvas.height = window.innerHeight;     //get max window H
+ctx.strokeStyle = '#BADA55';            //random color
+ctx.lineJoin = 'round';
+ctx.lineCap = 'round';
+ctx.lineWidth = 50;
+
+// Blending modes options
+//ctx.globalCompositeOperation = 'multiply';
+
+//VARIABLES
+let isDrawing = false;  //flag for whether the mouse is clicked and drawing or NOT
+let lastX = 0;
+let lastY = 0;   //both these are to avoid drawing start at X,Y coordinates
+let hue = 0;
+let direction = true;
+
+
+function draw(e) {
+    if(!isDrawing) return; //stops draw function when not moused down
+    console.log(e);
+    //hue colour START
+    ctx.strokeStyle = `hsl(${hue}, 100%, 50%`;
+    ctx.beginPath();
+    // start from
+    ctx.moveTo(lastX, lastY);
+    // go to
+    ctx.lineTo(e.offsetX, e.offsetY);
+    ctx.stroke();
+    
+    /*lastX = e.offsetX;
+    lastY = e.offsetY;*/    //can be shorter written here: 
+    [lastX, lastY] = [e.offsetX, e.offsetY]; // called "destructuring an array"
+
+    // hue color END
+    hue++;
+    if(hue >= 360){
+        hue = 0;
+    }
+
+    //line width control = if >100 or <1 flip the direction
+    if (ctx.lineWidth >= 100 || ctx.lineWidth <= 1){
+        direction = !direction;
+    }
+    if (direction) {
+        ctx.lineWidth++;
+    } else {
+        ctx.lineWidth--;
+    }
+    //ctx.lineWidth++; //increments the line size, but needs control
+}
+
+
+canvas.addEventListener('mousedown', (e) => {
+    isDrawing = true;
+    [lastX, lastY] = [e.offsetX, e.offsetY];
+    });
+
+canvas.addEventListener('mousemove', draw);
+canvas.addEventListener('mouseup', () => isDrawing = false);
+canvas.addEventListener('mouseout', () => isDrawing = false); //avoids problem of leaving/returning the canvas
+
+
+</script>
+
+
+
+<style>
+  html, body {
+    margin:0;
+  }
+</style>
+
+</body>
+</html>
